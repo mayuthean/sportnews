@@ -91,6 +91,8 @@ EOT;
         <script src="ad.js"></script>
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-46680343-1"></script>
+        <script src="{$asset}/ckeditor/ckeditor.js"></script>
+
        
 EOT;
         echo $js;
@@ -224,10 +226,13 @@ EOT;
         <!-- /.search form -->
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu" data-widget="tree">
-            <li class="active treeview">
+            <li class="active">
                 <a href="{$url}/">
                     <i class="fa fa-home"></i> <span>Dashboard</span>
                 </a>
+            </li>
+            <li>
+                <a href="{$url}/pages/pages/index.php"><i class="fa fa-file"></i>Pages</a>
             </li>
             <li class="treeview">
                 <a href="#">
@@ -254,7 +259,7 @@ EOT;
     // function Login 
     function login($username, $password)
     {
-        $sql = "select * from users where username='{$username}'";
+        $sql = "select * from users where username='{$username}' and active=1";
         $result = query($sql);
         $user = mysqli_fetch_assoc($result);
         if($user==null)
@@ -278,6 +283,26 @@ EOT;
         if($_SESSION['user']==null)
         {
             header('location:'. url(). '/login.php');
+        }
+    }
+
+    function upload($file, $path, $id=0)
+    {
+        $file_name = $file['name'];
+        $arr = explode(".", $file_name);
+        $ext = $arr[count($arr)-1];
+        $new_name = date('Y-m-d-H-i-s'). "." . $ext;
+        if($id>0)
+        {
+            $new_name = md5($id). "." . $ext;
+        }
+        $tmp_name = $file['tmp_name'];
+        $i = move_uploaded_file($tmp_name, $path . $new_name);
+        if($i>0){
+            return $new_name;
+        }
+        else{
+            return "Default.png";
         }
     }
 ?>

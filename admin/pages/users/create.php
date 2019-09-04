@@ -26,8 +26,17 @@ if (isset($_POST['btnsave'])) {
     $pass = md5($_POST['password']);
     $sql = "insert into users(first_name, last_name, email, username, phone, password) value(
             '{$fname}', '{$lname}', '{$email}', '{$uname}', '{$phone}', '{$pass}')";
-    $i = non_query($sql);
-    if ($i > 0) {
+    $i = insert_get_id($sql);
+
+    if ($i > 0) 
+    {
+        if(isset($_FILES['photo']))
+        {
+            $path = UPLOAD_PATH . "/users/";
+            $photo = $_FILES['photo'];
+            $up = upload($photo, $path, $i);
+            non_query("update users set photo='uploads/users/{$up}' where id={$i} ");
+        }
         $success = "You have insert successful";
     } else {
         $fail = "You have insert fail! please check again";
@@ -45,22 +54,21 @@ if (isset($_POST['btnsave'])) {
     <section class="content">
         <div class="box">
             <div class="box-body">
-                <form method="POST" class="form-horizontal">
+                <form method="POST" class="form-horizontal" enctype="multipart/form-data">
                     <?php if ($success != "") { ?>
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-
-                        <?php echo $success; ?>;
-                        }
-                    </div>
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <?php echo $success; ?>
+                            }
+                        </div>
                     <?php } ?>
                     <?php if ($fail != "") { ?>
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 
-                        <?php echo $fail; ?>;
-                        }
-                    </div>
+                            <?php echo $fail; ?>;
+                            }
+                        </div>
                     <?php } ?>
 
                     <div class="row">
@@ -106,10 +114,10 @@ if (isset($_POST['btnsave'])) {
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <label for="photo" class="col-sm-3">Image</label>
-                                <input type="file" name="photo" id="photo" class="form-control">
+                                <input type="file" name="photo" id="photo" class="form-control" accept="image/x-png, image/x-jpeg, image/x-gif, image/x-jpg" onchange="preview(event)">
                             </div>
                             <p>
-
+                                <img src="" alt="" id="image" width="200">
                             </p>
                             <p>
                                 <button class="btn btn-primary" name="btnsave">Save</button>
@@ -121,5 +129,10 @@ if (isset($_POST['btnsave'])) {
         </div>
     </section>
 </div>
-
+<script>
+    function preview(e){
+        var img = document.getElementById("image");
+        img.src = URL.createObjectURL(e.target.files[0]); 
+    }
+</script>
 <?php include "../../template/footer.php"; ?>
