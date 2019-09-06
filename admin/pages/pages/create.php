@@ -8,12 +8,26 @@ session_start();
 is_login();
 ?>
 <?php include "../../template/header.php"; ?>
-<?php
-$title = "";
-$success = "";
-$fail = "";
-if (isset($_POST['btnsave'])) { }
-?>
+    <?php
+    $title = "";
+    $success = "";
+    $fail = "";
+    if (isset($_POST['btnsave'])) { 
+
+        $title = $_POST['title'];
+        $desc = $_POST['description'];
+        $desc = htmlspecialchars($desc);
+        $sql = "INSERT INTO pages (title, description) VALUES('{$title}', '{$desc}')";
+        $i = non_query($sql);
+        if($i > 0)
+        {
+            $success = "Your data has been saved";
+        }
+        else{
+            $fail = "Your data can't saved, please check again";
+        }
+    }
+    ?>
 
 <div class="content-wrapper">
     <section class="content-header">
@@ -34,7 +48,7 @@ if (isset($_POST['btnsave'])) { }
                         </div>
                     <?php } ?>
                     <?php if ($fail != "") { ?>
-                        <div class="alert alert-success alert-dismissible">
+                        <div class="alert alert-danger alert-dismissible">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 
                             <?php echo $fail; ?>;
@@ -58,7 +72,7 @@ if (isset($_POST['btnsave'])) { }
                             <textarea name="description" id="description" cols="30" rows="10" class="form-control"></textarea>
                             <p></p>
                             <p>
-                                <button class="btn btn-success btn-sm">Save</button>
+                                <button class="btn btn-success btn-sm" name="btnsave">Save</button>
                             </p>
                         </div>
                     </div>
